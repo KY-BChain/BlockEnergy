@@ -1,0 +1,63 @@
+pragma solidity ^0.8.0;
+
+contract TransactiveEnergy-TDD {
+    // Define variables for pricing and trading
+    uint public energyPrice;
+    mapping(address => uint) public energyBalance;
+    mapping(address => uint) public etherBalance;
+
+    // Define events for logging
+    event EnergyPurchased(address buyer, uint energyAmount);
+    event EnergySold(address seller, uint energyAmount);
+    event EnergyPriceUpdated(uint newPrice);
+
+    // Define functions for pricing and trading
+    function setEnergyPrice(uint _energyPrice) public {
+        energyPrice = _energyPrice;
+        emit EnergyPriceUpdated(energyPrice);
+    }
+
+    function buyEnergy(uint _energyAmount) public payable {
+        require(msg.value == energyPrice * _energyAmount, "Invalid amount of ether sent.");
+        energyBalance[msg.sender] += _energyAmount;
+        etherBalance[address(this)] += msg.value;
+        emit EnergyPurchased(msg.sender, _energyAmount);
+    }
+
+    function sellEnergy(uint _energyAmount) public {
+        require(energyBalance[msg.sender] >= _energyAmount, "Insufficient energy balance.");
+        uint energyValue = energyPrice * _energyAmount;
+        energyBalance[msg.sender] -= _energyAmount;
+        etherBalance[msg.sender] += energyValue;
+        emit EnergySold(msg.sender, _energyAmount);
+    }
+
+    // Define functions for testing
+    function getEnergyBalance(address _account) public view returns (uint) {
+        return energyBalance[_account];
+    }
+
+    function getEtherBalance(address _account) public view returns (uint) {
+        return etherBalance[_account];
+    }
+
+    function testEnergyPricing() public {
+        setEnergyPrice(10);
+        assert(energyPrice == 10);
+    }
+
+    function testEnergyTrading() public {
+        setEnergyPrice(10);
+        address buyer = address(0x123);
+        address seller = address(0x456);
+        uint initialEtherBalance = etherBalance[address(this)];
+        uint initialBuyerEnergyBalance = energyBalance[buyer];
+        uint initialSellerEtherBalance = etherBalance[seller];
+        buyEnergy{value: 100}(5);
+        assert(energyBalance[buyer] == initialBuyerEnergyBalance + 5);
+        assert(etherBalance[address(this)] == initialEtherBalance + 100);
+        sellEnergy(3);
+        assert(energyBalance[seller] == 3);
+        assert(etherBalance[seller] == initialSellerEtherBalance + 30);
+    }
+}
