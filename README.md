@@ -220,3 +220,17 @@ In this example, the TransactiveEnergy-trading contract defines a transactive en
 
     buyEnergy: This function allows a buyer to purchase energy from an available energy trade by index. It checks that the payment amount is correct, that the trade is available, and that it has not already been filled. It then fills the trade
 
+
+For an example of a complete smart contract for a transactive energy system on the Binance Smart Chain that includes pricing and trading functions:
+TransactiveEnergy-BNB
+This contract uses the OpenZeppelin library to import the IERC20 interface, which allows the contract to interact with ERC-20 tokens on the Binance Smart Chain. The contract includes the following functionality:
+
+    setEnergyPrice: Allows the owner of the contract to set the price of energy.
+
+    setEnergyAvailable: Allows the owner of the contract to set the amount of energy that is available for purchase.
+
+    buyEnergy: Allows users to buy energy from the owner of the contract by transferring the appropriate amount of tokens to the contract. The function checks that the payment amount is correct and that there is enough energy available, and then transfers the tokens to the owner and the energy to the buyer.
+
+The contract emits events for setting the energy price and availability, as well as for when energy is bought.
+
+Note that this contract assumes that the energy tokens are ERC-20 tokens that have been previously issued and are available for trading. If you need to create your own energy tokens, you will need to add additional functionality to the contract to handle token issuance and management.
