@@ -1,0 +1,71 @@
+pragma solidity ^0.8.0;
+
+contract TransactiveEnergy-trading {
+
+    // Structure to store energy trade information
+    struct Trade {
+        address buyer;
+        uint amount;
+        uint price;
+        bool filled;
+    }
+    
+    // Variables for the owner and the energy price
+    address public owner;
+    uint public energyPrice;
+
+    // Arrays to store available and sold energy trades
+    Trade[] public availableTrades;
+    Trade[] public soldTrades;
+
+    // Constructor to initialize the contract
+    constructor() {
+        owner = msg.sender;
+        energyPrice = 0;
+    }
+
+    // Function to set the energy price
+    function setEnergyPrice(uint _energyPrice) public {
+        require(msg.sender == owner, "Only the owner can set the energy price");
+        energyPrice = _energyPrice;
+    }
+
+    // Function to add an available energy trade
+    function addAvailableTrade(uint _amount, uint _price) public {
+        require(msg.sender == owner, "Only the owner can add an available trade");
+        availableTrades.push(Trade(msg.sender, _amount, _price, false));
+    }
+
+    // Function to get the number of available energy trades
+    function getNumAvailableTrades() public view returns (uint) {
+        return availableTrades.length;
+    }
+
+    // Function to get the information of an available energy trade by index
+    function getAvailableTrade(uint _index) public view returns (address, uint, uint, bool) {
+        Trade storage trade = availableTrades[_index];
+        return (trade.buyer, trade.amount, trade.price, trade.filled);
+    }
+
+    // Function to buy energy from an available trade
+    function buyEnergy(uint _index) public payable {
+        require(msg.value == availableTrades[_index].price, "Invalid payment amount");
+        require(availableTrades[_index].amount > 0, "Trade not available");
+        require(!availableTrades[_index].filled, "Trade already filled");
+        availableTrades[_index].filled = true;
+        soldTrades.push(availableTrades[_index]);
+        payable(owner).transfer(msg.value);
+        // TODO: Add code to transfer energy to buyer
+    }
+
+    // Function to get the number of sold energy trades
+    function getNumSoldTrades() public view returns (uint) {
+        return soldTrades.length;
+    }
+
+    // Function to get the information of a sold energy trade by index
+    function getSoldTrade(uint _index) public view returns (address, uint, uint, bool) {
+        Trade storage trade = soldTrades[_index];
+        return (trade.buyer, trade.amount, trade.price, trade.filled);
+    }
+}
