@@ -197,7 +197,7 @@ This is just one example of how a prediction model or algorithm can be implement
 The "Augur" decentralised prediction market platform is based on buy and sell shares. Trading activities in Financial market. A Transactive energy is about energy generation and consuming balance and the availability of energy that is to be generate and / or stored on energy requirement prediction within the network. A Ethereum network where the data is coming from the AI-powered smart meter, and structured as node in the ethereum blockchain.
 
 It is possible to use AI-powered smart meters as nodes in the Ethereum blockchain to enable a transactive energy system. Here is an example of a smart contract in Solidity that could be used for this purpose:-
-In this example, the smart contract defines a TransactiveEnergy contract that allows users to buy energy from the owner of the contract. The contract includes three functions:
+In this example, the smart contract defines a TransactiveEnergy-sample contract that allows users to buy energy from the owner of the contract. The contract includes three functions:
 
     setEnergyPrice: This function allows the owner of the contract to set the price of energy in wei.
 
@@ -206,3 +206,7 @@ In this example, the smart contract defines a TransactiveEnergy contract that al
     buyEnergy: This function allows users to buy energy from the owner of the contract by sending ether equal to the energy price times the amount of energy they want to buy. The function checks that the payment amount is correct and that there is enough energy available, and then transfers the payment to the owner and the energy to the buyer (this part is left as TODO in the example).
 
 This is just a simple example of a smart contract that could be used in a transactive energy system. Depending on the specific requirements of the system, additional functionality and complexity could be added to the contract.
+
+The example of a more complete smart contract for a Transactive Energy system on the Ethereum blockchain. This example assumes that the energy generation and consumption data is coming from AI-powered smart meters that are registered as nodes in the blockchain:
+
+
