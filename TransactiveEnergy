@@ -1,0 +1,74 @@
+pragma solidity ^0.8.0;
+
+contract TransactiveEnergy {
+    
+    // Define the structure for storing energy data
+    struct EnergyData {
+        uint256 generation;
+        uint256 consumption;
+    }
+    
+    // Define the structure for storing user account data
+    struct Account {
+        uint256 balance;
+        mapping (uint256 => EnergyData) energyData;
+        uint256 energyDataCount;
+    }
+    
+    // Define variables for tracking the contract owner and energy price
+    address public owner;
+    uint256 public energyPrice;
+    
+    // Define variables for tracking energy generation and consumption data
+    mapping (address => Account) public accounts;
+    EnergyData[] public energyDataList;
+    
+    // Define events for energy data updates and energy purchases
+    event EnergyDataUpdated(address indexed account, uint256 timestamp, uint256 generation, uint256 consumption);
+    event EnergyPurchased(address indexed account, uint256 timestamp, uint256 energyAmount, uint256 price);
+    
+    // Constructor function
+    constructor() {
+        owner = msg.sender;
+        energyPrice = 0;
+    }
+    
+    // Function for setting the energy price (only the owner can call this)
+    function setEnergyPrice(uint256 _energyPrice) public {
+        require(msg.sender == owner, "Only the owner can set the energy price");
+        energyPrice = _energyPrice;
+    }
+    
+    // Function for updating energy generation and consumption data
+    function updateEnergyData(uint256 _generation, uint256 _consumption) public {
+        Account storage account = accounts[msg.sender];
+        energyDataList.push(EnergyData({
+            generation: _generation,
+            consumption: _consumption
+        }));
+        account.energyData[account.energyDataCount] = energyDataList[energyDataList.length - 1];
+        account.energyDataCount++;
+        emit EnergyDataUpdated(msg.sender, block.timestamp, _generation, _consumption);
+    }
+    
+    // Function for buying energy
+    function buyEnergy(uint256 _energyAmount) public payable {
+        require(msg.value == energyPrice * _energyAmount, "Invalid payment amount");
+        Account storage account = accounts[msg.sender];
+        require(account.balance >= _energyAmount, "Not enough energy balance");
+        account.balance -= _energyAmount;
+        emit EnergyPurchased(msg.sender, block.timestamp, _energyAmount, msg.value);
+    }
+    
+    // Function for adding energy to an account
+    function addEnergy(address _account, uint256 _energyAmount) public {
+        Account storage account = accounts[_account];
+        account.balance += _energyAmount;
+    }
+    
+    // Function for withdrawing funds (only the owner can call this)
+    function withdrawFunds(uint256 _amount) public {
+        require(msg.sender == owner, "Only the owner can withdraw funds");
+        payable(owner).transfer(_amount);
+    }
+}
