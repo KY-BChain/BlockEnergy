@@ -1,0 +1,86 @@
+pragma solidity ^0.8.0;
+
+contract TransactiveEnergy-trade {
+    
+    // Struct to represent a user account
+    struct User {
+        uint balance;           // User's account balance (in wei)
+        uint energyConsumed;    // Total energy consumed by the user (in kWh)
+        uint energyProduced;    // Total energy produced by the user (in kWh)
+        uint energyStored;      // Total energy stored by the user (in kWh)
+        bool isProducer;        // Whether the user is an energy producer or not
+    }
+    
+    // Struct to represent an energy offer
+    struct EnergyOffer {
+        uint price;             // Price of energy offer (in wei per kWh)
+        uint energyAmount;      // Amount of energy offered (in kWh)
+        address seller;         // Address of the seller offering the energy
+        bool isAvailable;       // Whether the energy offer is available or not
+    }
+    
+    // State variables
+    address public owner;
+    uint public energyPrice;
+    uint public energyAvailable;
+    mapping(address => User) public users;
+    EnergyOffer[] public energyOffers;
+    
+    // Events
+    event EnergyConsumed(address user, uint amount);
+    event EnergyProduced(address user, uint amount);
+    event EnergyStored(address user, uint amount);
+    event EnergyOfferCreated(address seller, uint price, uint energyAmount);
+    event EnergyOfferRemoved(address seller, uint price, uint energyAmount);
+    event EnergyOfferPurchased(address buyer, address seller, uint price, uint energyAmount);
+    
+    // Constructor
+    constructor() {
+        owner = msg.sender;
+        energyPrice = 0;
+        energyAvailable = 0;
+    }
+    
+    // Modifier to check if the caller is the contract owner
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the owner can perform this action");
+        _;
+    }
+    
+    // Function to set the price of energy
+    function setEnergyPrice(uint _energyPrice) public onlyOwner {
+        energyPrice = _energyPrice;
+    }
+    
+    // Function to add energy to the system
+    function addEnergy(uint _energyAmount) public onlyOwner {
+        energyAvailable += _energyAmount;
+    }
+    
+    // Function to create an energy offer
+    function createEnergyOffer(uint _price, uint _energyAmount) public {
+        require(users[msg.sender].isProducer, "Only energy producers can create energy offers");
+        require(_energyAmount > 0, "Energy amount must be greater than zero");
+        energyOffers.push(EnergyOffer({
+            price: _price,
+            energyAmount: _energyAmount,
+            seller: msg.sender,
+            isAvailable: true
+        }));
+        emit EnergyOfferCreated(msg.sender, _price, _energyAmount);
+    }
+    
+    // Function to remove an energy offer
+    function removeEnergyOffer(uint _index) public {
+        require(_index < energyOffers.length, "Invalid energy offer index");
+        require(energyOffers[_index].seller == msg.sender, "Only the seller can remove this energy offer");
+        energyOffers[_index].isAvailable = false;
+        emit EnergyOfferRemoved(msg.sender, energyOffers[_index].price, energyOffers[_index].energyAmount);
+    }
+    
+    // Function to purchase energy
+    function purchaseEnergy(uint _index, uint _energyAmount) public payable {
+        require(_index < energyOffers.length, "Invalid energy offer index");
+        EnergyOffer storage offer = energyOffers[_index];
+        require(offer.isAvailable, "Energy offer is not available");
+        require(_energyAmount <= offer.energyAmount
