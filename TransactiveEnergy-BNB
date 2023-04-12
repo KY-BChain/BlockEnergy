@@ -1,0 +1,43 @@
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
+contract TransactiveEnergy-BNB {
+    
+    address public owner;
+    uint public energyPrice;
+    uint public energyAvailable;
+    IERC20 public token;
+    
+    event EnergyPriceSet(uint energyPrice);
+    event EnergyAvailableSet(uint energyAvailable);
+    event EnergyBought(address buyer, uint energyAmount, uint paymentAmount);
+    
+    constructor(address _token) {
+        owner = msg.sender;
+        energyPrice = 0;
+        energyAvailable = 0;
+        token = IERC20(_token);
+    }
+    
+    function setEnergyPrice(uint _energyPrice) public {
+        require(msg.sender == owner, "Only the owner can set the energy price");
+        energyPrice = _energyPrice;
+        emit EnergyPriceSet(energyPrice);
+    }
+    
+    function setEnergyAvailable(uint _energyAvailable) public {
+        require(msg.sender == owner, "Only the owner can set the available energy");
+        energyAvailable = _energyAvailable;
+        emit EnergyAvailableSet(energyAvailable);
+    }
+    
+    function buyEnergy(uint _energyAmount) public {
+        uint paymentAmount = energyPrice * _energyAmount;
+        require(paymentAmount > 0, "Invalid payment amount");
+        require(_energyAmount <= energyAvailable, "Not enough energy available");
+        token.transferFrom(msg.sender, owner, paymentAmount);
+        energyAvailable -= _energyAmount;
+        emit EnergyBought(msg.sender, _energyAmount, paymentAmount);
+    }
+}
