@@ -234,3 +234,11 @@ This contract uses the OpenZeppelin library to import the IERC20 interface, whic
 The contract emits events for setting the energy price and availability, as well as for when energy is bought.
 
 Note that this contract assumes that the energy tokens are ERC-20 tokens that have been previously issued and are available for trading. If you need to create your own energy tokens, you will need to add additional functionality to the contract to handle token issuance and management.
+
+Here's a possible code base for a Transactive Energy system on the Ethereum blockchain, including pricing, trading functions, and a complete TDD (Test Driven Development) design methodology.
+
+This code defines a TransactiveEnergy-TDD contract on the Ethereum blockchain with functions for setting the energy price, buying and selling energy, and getting account balances. It also includes events for logging and test functions for TDD.
+
+To test the contract, you can use the testEnergyPricing and testEnergyTrading functions to verify that the pricing and trading functions are working correctly.
+
+Note that this is just one possible implementation and there are many different approaches to building a Transactive Energy system on Ethereum.
