@@ -208,5 +208,15 @@ In this example, the smart contract defines a TransactiveEnergy-sample contract 
 This is just a simple example of a smart contract that could be used in a transactive energy system. Depending on the specific requirements of the system, additional functionality and complexity could be added to the contract.
 
 The example of a more complete smart contract for a Transactive Energy system on the Ethereum blockchain. This example assumes that the energy generation and consumption data is coming from AI-powered smart meters that are registered as nodes in the blockchain:
+In this example, the TransactiveEnergy-trading contract defines a transactive energy system that allows buyers to purchase energy from sellers through trades. The contract includes the following functions:
 
+    setEnergyPrice: This function allows the owner of the contract to set the price of energy in wei.
+
+    addAvailableTrade: This function allows the owner of the contract to add an available energy trade to the list of available trades.
+
+    getNumAvailableTrades: This function returns the number of available energy trades.
+
+    getAvailableTrade: This function returns the information of an available energy trade by index.
+
+    buyEnergy: This function allows a buyer to purchase energy from an available energy trade by index. It checks that the payment amount is correct, that the trade is available, and that it has not already been filled. It then fills the trade
 
